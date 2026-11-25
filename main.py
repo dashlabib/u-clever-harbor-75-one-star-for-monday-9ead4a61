@@ -48,6 +48,20 @@ def main():
     if any(not ch.isprintable() for ch in text):
         fail("entry must contain only printable characters")
 
+    # Report each gate rule before writing, so a failed or
+    # surprising run names the rule instead of failing silently.
+    checks = [
+        ("utf-8", "decoded as UTF-8"),
+        ("length", "%d characters (need 1 to 180)" % len(text)),
+        ("non-blank", "more than white space"),
+        ("single-line", "one line, no line break"),
+        ("no-edge-space", "no leading or trailing whitespace"),
+        ("words", "%d words (at most 25)" % len(words)),
+        ("printable", "printable characters only"),
+    ]
+    for name, detail in checks:
+        print("gate %s: %s" % (name, detail), file=sys.stderr)
+
     target = "/output/entry.txt"
     try:
         os.makedirs("/output", exist_ok=True)
